@@ -13,28 +13,7 @@ ENV GOROOT=/usr/local/go
 ENV PATH=$PATH:$GOPATH/bin:$GOROOT/bin
 ENV GO111MODULE=auto
 
-# Required packages for user plane
-RUN apt-get -y install git gcc cmake autoconf libtool pkg-config libmnl-dev libyaml-dev
-RUN go get -u github.com/sirupsen/logrus
-
-# Required packages for WebConsole
-RUN apt-get -y remove cmdtest yarn
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-RUN apt-get -y update
-RUN apt-get -y install nodejs yarn
-
-# Build all NFs at once
-WORKDIR /root
-RUN git clone --recursive -b v3.0.5 -j `nproc` https://github.com/free5gc/free5gc.git
-WORKDIR /root/free5gc
-RUN make
-
-# Build WebConsole
-WORKDIR /root/free5gc/webconsole
-RUN git checkout v1.0.1
-WORKDIR /root/free5gc
-RUN make webconsole
-
 # Install networking toolkit
 RUN apt-get -y install iputils-ping tcpdump iptables net-tools
+
+# TODO: Download and build free5GC NFs and WebConsole
